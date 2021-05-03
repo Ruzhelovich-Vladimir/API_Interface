@@ -1,0 +1,176 @@
+{
+    "login": {
+        "type": "POST",
+        "method": "login"
+    },
+    "plan": [
+        {
+            "type": "POST",
+            "method": "Warehouse/productWarehouses",
+            "json_data_path": "productWarehouses.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Product/loadProduct",
+            "json_data_path": "loadProduct.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Product/loadProductAttributs",
+            "json_data_path": "loadProductAttributs.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Product/uploadProductsImages/?supplierId=$supplierId$",
+            "media_path": "uploadProductsImages.zip",
+            "successful_execution": "{'failed': {}}"
+        },
+        {
+            "type": "POST",
+            "method": "Warehouse/productStocks",
+            "json_data_path": "productStocks.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Warehouse/outletWarehouses",
+            "json_data_path": "outletWarehouses.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Order/operations",
+            "json_data_path": "operations.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Order/deliveryDates",
+            "json_data_path": "deliveryDates.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Product/quants",
+            "json_data_path": "quants.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "PayForm/payForms",
+            "json_data_path": "payForms.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "PayForm/outletPayForms",
+            "json_data_path": "outletPayForms.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "PayForm/priceLists",
+            "json_data_path": "priceLists.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "PriorityList/priorityLists",
+            "json_data_path": "priorityLists.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "PriorityList/priorityListsProduct",
+            "json_data_path": "priorityListsProduct.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "PriorityList/priorityListsOutlet",
+            "json_data_path": "priorityListsOutlet.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Promo/promoActivities",
+            "json_data_path": "promoActivities.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Promo/promoActivitiesByOutlet",
+            "json_data_path": "promoActivitiesByOutlet.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "GET",
+            "method": "SyncOrder/orders/$supplierId$",
+            "json_data_path": "orders.json",
+            "successful_execution": "data"
+        },
+        {
+            "type": "POST",
+            "method": "SyncOrder/syncOrders",
+            "json_data_path": "syncOrders.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Promo/promoActivities",
+            "json_data_path": "promoActivities.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Promo/promoActivitiesByItem",
+            "json_data_path": "promoActivitiesByItem.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Promo/promoActivitiesByOutlet",
+            "json_data_path": "promoActivitiesByOutlet.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Order/orderInvoices",
+            "json_data_path": "orderInvoices.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Order/externalOrders",
+            "json_data_path": "externalOrders.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Order/externalOrderDetails",
+            "json_data_path": "externalOrdersDetails.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Debt/debtTypes",
+            "json_data_path": "debtTypes.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Debt/debts",
+            "json_data_path": "debts.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "Debt/debtDetails",
+            "json_data_path": "debtDetails.json",
+            "successful_execution": "[]"
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+{
+    "Поставщик ИД": {
+        "key": "supplierId",
+        "type": "int"
+    },
+    "chunkControl": {
+        "key": "chunkControl",
+        "type": [
+            "0"
+        ],
+        "default": "0"
+    },
+    "processingType": {
+        "key": "processingType",
+        "type": [
+            "0"
+        ],
+        "default": "0"
+    },
+    "Код Склада": {
+        "key": "data:warehouseExternalCode",
+        "type": "nvarchar(50)"
+    },
+    "Код ТС": {
+        "key": "data:customerExternalCode",
+        "type": "nvarchar(50)"
+    },
+    "Наименование склада": {
+        "key": "data:warehouseName",
+        "type": "nvarchar(50)"
+    },
+    "Признак тары": {
+        "key": "data:allowTareReturn",
+        "type": [
+            "0",
+            "1"
+        ],
+        "default": "0"
+    },
+    "Статус": {
+        "key": "data:status",
+        "type": [
+            "2",
+            "9"
+        ],
+        "default": "2"
+    }
+}
