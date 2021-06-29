@@ -16,7 +16,7 @@ base = 'Win32GUI' #'win32' #
 executables = [
             Executable('api_module.py', targetName='api_transport.exe'),
             Executable('json_converter_module.py', targetName='json_converter.exe'),
-            Executable('media_to_zip_module.py', targetName='to_zip_media.exe'),
+            Executable('to_zip_media.py.py', targetName='to_zip_media.exe'),
             Executable('main_console_module.py', targetName='interface_console.exe'),
             Executable('main_module.pyw', targetName='interface.exe')
                ]
