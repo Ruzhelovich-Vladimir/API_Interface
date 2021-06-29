@@ -1,4 +1,3 @@
-bdist_wheel
 certifi==2020.12.5
 chardet==4.0.0
 cx-Freeze==6.6
