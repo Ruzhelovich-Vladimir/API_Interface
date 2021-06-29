@@ -9,6 +9,8 @@ SERVER="servername"
 CATALOG="/catalogapi/"
 # План запуска REST-запросов
 REQUEST_PLAN = "schemes/api_request_plan.json"
+# Проверять ли подписан сертификат
+SSL_VERIFY = 'True'
 
 #################################################################
 # Параметры настройки каталога Интерфейса
@@ -38,5 +40,7 @@ LOG_FILE = "interface.log"
 
 # Разделитель постфикса файла
 POSTFIX_FILENAME_SEPARATOR = "_"
+# Разделитель зависимых таблиц в имени файла (Не должно быть пустым)
+DEPENDENT_FILENAME_SEPARATOR = ":"
 # Разделитель столбца таблицы в файле
 COL_SEPARATOR_TABLE="|"

@@ -4,12 +4,15 @@ import os
 import zipfile
 import log
 
+from main_module import init
+
 PATH = settings.OUTBOX_DATA_FOLDER
 EXT = 'jpg'
 SEPARATOR = '_'
 
 def run(logger):
 
+    init()
     default_path = os.path.abspath(os.curdir)
     os.chdir(PATH)
     files = os.listdir()

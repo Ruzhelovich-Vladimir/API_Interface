@@ -1,6 +1,6 @@
-from json import encoder
 from config.config import settings
 import logging
+
 
 class CustomFormatter(logging.Formatter):
     """Logging Formatter to add colors and count warning / errors"""
@@ -11,7 +11,6 @@ class CustomFormatter(logging.Formatter):
     bold_red = '\x1b[31;1m'
     reset = '\x1b[0m'
     format = '[%(asctime)s] - %(levelname)-8s - %(message)s'
-    
 
     FORMATS = {
         logging.DEBUG: grey + format + reset,
@@ -26,20 +25,20 @@ class CustomFormatter(logging.Formatter):
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
 
+
 def init():
-    
-    file_log = logging.FileHandler(settings.LOG_FILE,mode='w')
-    #console_out = logging.StreamHandler()
-    
+    file_log = logging.FileHandler(settings.LOG_FILE, mode='w')
+
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
 
     logging.basicConfig(
-        handlers=(file_log,),
-        datefmt='%m.%d.%Y %H:%M:%S',
-        format = '[%(asctime)s] - %(levelname)-8s - %(message)s',
-        level=logging.DEBUG)
-    
+                        format='[%(asctime)s] - %(levelname)-8s - %(message)s',
+                        datefmt='%m.%d.%Y %H:%M:%S',
+                        level=logging.DEBUG,
+                        handlers=(file_log,)
+                        )
+
     # create console handler with a higher log level
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)

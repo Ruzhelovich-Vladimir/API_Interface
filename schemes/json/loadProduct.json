@@ -1,0 +1,173 @@
+{
+    "supplierId": {
+      "#table_field_name": "Поставщик ИД",
+      "#type": "int",
+      "#default": "",
+      "#is_required": 1
+    },
+  "chunkControl":{
+      "#table_field_name": "chunkControl",
+      "#type": ["0"],
+      "#is_required": 1,
+      "#default": "0"
+  },
+  "processingType": {
+      "#table_field_name": "processingType",
+      "#type": "constant",
+      "#is_required": 1,
+      "#default": "0"
+  },
+  "data": {
+      "#type": "struct",
+      "#is_required": 1,
+      "#default": [],
+      "#struct": [
+        {
+            "productExternalCode": {
+                "#table_field_name": "Код продукта",
+                "#type": "nvarchar(50)",
+
+                "#is_required": 1
+            },
+            "productExternalCode2": {
+                "#table_field_name": "Код продукта2",
+                "#type": "nvarchar(50)",
+                "#is_required": 0
+            },
+            "eanCode": {
+                "#table_field_name": "Штрих код продукта",
+                "#type": "nvarchar(50)",
+                "#is_required": 0
+            },
+            "productName": {
+                "#table_field_name": "Наименование продукта",
+                "#type": "nvarchar(150)",
+                "#is_required": 1
+            },
+            "productTechnicalName": {
+                "#table_field_name": "Наименование номенклатуры в УСД",
+                "#type": "nvarchar(150)",
+                "#is_required": 0
+            },
+            "productClassificationExternalCode": {
+                "#table_field_name": "Служебное поле не используем",
+                "#type": "nvarchar(50)",
+                "#default": "1",
+                "#is_required": 1
+            },
+            "volume": {
+                "#table_field_name": "Объем базовой единицы измерения",
+                "#type": "numeric(12,4)",
+                "#is_required": 1
+            },
+            "package": {
+                "#table_field_name": "Тип базовой единицы измерения",
+                "#type": "nvarchar(100)",
+                "#default": "штука",
+                "#is_required": 1
+            },
+            "packageQty": {
+                "#table_field_name": "Количество базовых единиц измерения в упаковке",
+                "#type": "numeric(12,4)",
+                "#default": "1",
+                "#is_required": 1
+            },
+            "description": {
+                "#table_field_name": "Описание продукта",
+                "#type": "nvarchar(max)",
+                "#is_required": 1
+            },
+            "isAlc": {
+                "#table_field_name": "Признак алкогольной продукции",
+                "#type": ["0","1"],
+                "#is_required": 0,
+                "#default": "0"
+            },
+            "isTare": {
+                "#table_field_name": "Признак тары",
+                "#type": ["0","1"],
+                "#is_required": 1,
+                "#default": "0"
+            },
+            "pictograph": {
+                "#table_field_name": "Пиктограмма",
+                "#type": ["1","2","3","4","5","6","7","8","9","10"],
+                "#is_required": 0
+            },
+            "productsMix": {
+                "#table_field_name": "Код продукта",
+                "#fromfile": "loadProduct:productsMix.json",
+                "#is_required": 0,
+                "#type": "struct",
+                "struct": [
+                    {
+                        "productExternalCode": {
+                            "#table_field_name": "Код продукта",
+                            "#type": "nvarchar(50)",
+                            "#is_required": 1
+                        },
+                        "productQuantity": {
+                            "#table_field_name": "Количество продукта в Mix",
+                            "#type": "int",
+                            "#is_required": 1
+                        },
+                    "status": {
+                        "#table_field_name": "Статус",
+                        "#key": "status",
+                        "#type": ["2","9"],
+                        "default": "2"
+                    },
+                    "status": {
+                        "#table_field_name": "Статус",
+                        "#key": "status",
+                        "#type": ["2","9"],
+                        "default": "2"
+                    }
+                    }
+      ]
+            },
+            "productsAnalog": {
+                "#file_name": "loadProduct:productsAnalog.json",
+                "#is_required": 0,
+                "#type": [
+                     {
+                    "productExternalCode": {
+                        "#table_field_name": "Код продукта аналога",
+                        "#type": "nvarchar(50)",
+                        "#is_required": 1
+                    },
+                    "productExternalCode2": {
+                        "#table_field_name": "Код продукта аналога2",
+                        "#type": "nvarchar(50)",
+                        "#is_required": 0
+                    },
+                    "eanCode": {
+                        "#table_field_name": "Штрих код продукта",
+                        "#type": "nvarchar(50)",
+                        "#is_required": 0
+                    },
+                    "plType": {
+                        "#table_field_name": "Тип Акции",
+                        "#type": ["2","4"],
+                        "#is_required": 1
+                    },
+                    "status": {
+                        "#table_field_name": "Статус",
+                        "#type": ["2","9"],
+                        "default": "2",
+                        "is_required": 1
+                    }
+                }
+            ]
+            },
+            "status": {
+                "#table_field_name": "Статус",
+                "#key": "data:status",
+                "#type": ["2","9"],
+                "#default": "2",
+                "is_required": 1
+            }
+    }
+  ]
+  }
+}
