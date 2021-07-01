@@ -6,6 +6,7 @@ import json
 import os
 from shutil import move
 import log
+import datetime
 
 from config.config import settings
 from main_module import init
@@ -181,6 +182,17 @@ class Api:
                       and f.endswith(f'.{ext}')]
         return files_list
 
+    def move_to_archive(self, src):
+
+        if settings.FILES_MOVE_TO_ARCHIVE == "YES":
+            # Перемещаем только файлы для отравления
+            filename, ext = os.path.basename(src).split('.')
+            filename = f'{filename}_{datetime.now().strftime("%Y%m%d%H%M%S")}{ext}'
+            destination = os.path.join(self.outbox_arch_path, os.path.basename(filename))
+            move(src, destination)
+
+        return
+
     def run_requests(self, request):
 
         if self.current_token is None:
@@ -197,9 +209,8 @@ class Api:
             for _file_name in zip_list:
                 self.send_file_response(request["type"], f'{self.catalog}{request["method"]}',
                                         request["successful_execution"], _file_name)
-                # Перемещаем только файлы для отравления
-                destination = os.path.join(self.outbox_arch_path, os.path.basename(_file_name))
-                move(_file_name, destination)
+                self.move_to_archive(_file_name)
+
         elif request["type"] == "POST" and "json_data_path" in request:
             json_list = self.get_file_list(
                 filename=request["json_data_path"], path=method_path, ext='json')
@@ -224,8 +235,7 @@ class Api:
                         continue
 
                 # Перемещаем только файлы для отравления
-                destination = os.path.join(self.outbox_arch_path, os.path.basename(_file_name))
-                move(_file_name, destination)
+                self.move_to_archive(_file_name)
                 self.api_request(
                     request["type"], f'{self.catalog}{request["method"]}', request["successful_execution"], data,
                     _file_name)

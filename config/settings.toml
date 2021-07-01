@@ -44,3 +44,5 @@ POSTFIX_FILENAME_SEPARATOR = "_"
 DEPENDENT_FILENAME_SEPARATOR = ":"
 # Разделитель столбца таблицы в файле
 COL_SEPARATOR_TABLE="|"
+# Перемещать ли файлы в архив
+FILES_MOVE_TO_ARCHIVE="YES"
