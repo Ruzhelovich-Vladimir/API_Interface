@@ -46,3 +46,14 @@ DEPENDENT_FILENAME_SEPARATOR = ":"
 COL_SEPARATOR_TABLE="|"
 # Перемещать ли файлы в архив
 FILES_MOVE_TO_ARCHIVE="YES"
+
+#################################################################
+# Параметры получения обновления обновления
+#################################################################
+WORK_COPY_PATH = "."
+SVN_PROTOCOL = "https"
+SVN_HOST = "host"
+SVN_PATH = "path"
+SVN_LOGIN = "login"
+SVN_PASSW = "password"
+

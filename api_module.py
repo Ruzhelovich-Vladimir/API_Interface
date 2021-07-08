@@ -187,7 +187,7 @@ class Api:
         if settings.FILES_MOVE_TO_ARCHIVE == "YES":
             # Перемещаем только файлы для отравления
             filename, ext = os.path.basename(src).split('.')
-            filename = f'{filename}_{datetime.now().strftime("%Y%m%d%H%M%S")}{ext}'
+            filename = f'{filename}_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}{ext}'
             destination = os.path.join(self.outbox_arch_path, os.path.basename(filename))
             move(src, destination)
 
