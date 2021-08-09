@@ -17,10 +17,10 @@ def init():
         except:
             pass
 
-    # Clearing error folder
-    lst = os.listdir(settings.ERRORS_FOLDER)
-    for file_name in lst:
-        if file_name.endswith(f'.json'):
-            os.remove(os.path.join(settings.ERRORS_FOLDER, file_name))
+    # # Clearing error folder
+    # lst = os.listdir(settings.ERRORS_FOLDER)
+    # for file_name in lst:
+    #     if file_name.endswith(f'.json'):
+    #         os.remove(os.path.join(settings.ERRORS_FOLDER, file_name))
 
 

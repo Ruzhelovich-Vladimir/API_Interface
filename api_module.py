@@ -1,5 +1,6 @@
 import http.client
 import ssl
+from typing import Pattern
 
 import requests
 import json
@@ -11,15 +12,16 @@ import datetime
 from config.config import settings
 from main_module import init
 from json_module import JsonFile
+import re
 
 class Api:
     """API Class"""
 
-    _slots__ = (
+    __slots__ = (
         'conn', 'headers', 'supplier_data', 'request_plan_data', 'login', 'password', 'supplierId', 'outbox_path',
         'current_token', 'protocol', 'server', 'login'
     )
-
+    
     def __init__(self, api_logger):
 
         self.logger = api_logger
@@ -28,9 +30,9 @@ class Api:
         self.protocol = settings.PROTOCOL
         self.catalog = settings.CATALOG
         self.server = settings.SERVER
-        ssl_verify = settings.SSL_VERIFY == 'False'
+        self.ssl_verify = settings.SSL_VERIFY == 'YES'
         self.conn = http.client.HTTPSConnection(self.server,
-                                                context=(ssl._create_unverified_context() if ssl_verify else None))
+                                                context=(ssl._create_unverified_context() if not self.ssl_verify else None))
 
         self.login = settings.LOGIN
         self.password = settings.PASSWORD
@@ -40,6 +42,7 @@ class Api:
         self.inbox_path = settings.INBOX_DATA_FOLDER
         self.inbox_arch_path = settings.ARCHIVE_INBOX_DATA_FOLDER
         self.errors_path = settings.ERRORS_FOLDER
+        self.startdate = datetime.datetime.now()
 
         self.headers = {'accept': 'application/json',
                         'Content-type': 'application/json'}
@@ -49,6 +52,7 @@ class Api:
 
         self.headers["Authorization"] = f"Bearer {self.current_token}"
 
+    
     """Get token request"""
     def __get_token(self):
         r = {'login': self.login, 'password': self.password,
@@ -75,14 +79,24 @@ class Api:
         result = True if (successful_execution == text_result or successful_execution ==
                           "data") and res.status == 200 else False
 
-        msg = f'{type_method} {method.replace(self.catalog, "")} {str(res.status)}: {res.reason} {filename}'
-        if result:
-            self.logger.info(msg)
+        errors = ''
+
+
+        msg = lambda : f'{type_method} {method.replace(self.catalog, "")} {str(res.status)}: {res.reason} {errors}'
+
+        if not result:
+            dict_result = []
+            try:
+                #Попытка преоборазовать в JSON-структуру
+                dict_result = json.loads(text_result)
+            except:
+                errors=[text_result] # Пребразую текст в подобную json структуру
+            
+            errors = self.save_to_file(dict_result, method)
+            text_result = ''
+            self.logger.info(msg())
         else:
-            error = json.loads(text_result) if res.status == 200 else text_result
-            errors = self.save_to_file(error, method) if res.status == 200 else [text_result]
-            self.logger.error(f'{msg} - {errors}')
-            text_result = ""
+            self.logger.info(msg())
 
         return result, text_result
 
@@ -98,15 +112,23 @@ class Api:
         # Перебор всех элементов
         for elem in error:
             if 'result' in elem:
-                error_type = elem['result']
+                error_type = str(elem['result'])
+                del elem['result']
+            elif 'messages' in elem:
+                error_type = str(elem['messages'])
+                del elem['messages']
             else:
                 continue
             # Заменяем в описании ошибки значение атрибутов наименование атрибута для унификации ошибок
+            
+            
             for key in elem:
-                if key != 'result':
-                    error_type = error_type.replace(str(elem[key]), key)
+                if elem[key] != '':
+                    pattern = rf'\b{str(elem[key])}\b|\b:{str(elem[key])}\b|\b-{str(elem[key])}\b'
+                    error_type = re.sub(pattern, f'[{key}]', error_type, count=1)
+                    #error_type = error_type.replace(f': {str(elem[key])} ', f': [{key}] ').replace(f'- {str(elem[key])} ', f'- [{key}] ').replace(f' -{str(elem[key])} ', f' -[{key}] ').replace(f' {str(elem[key])} ', f' [{key}] ')
 
-            del elem['result']
+
             if error_type in result:
                 # Добавляем в сушествующий тип новый элемен
                 result[error_type]['list'].append(elem)
@@ -124,7 +146,7 @@ class Api:
 
         #Get filename
         file_error = method.split('/')[-1] if method.split('/')[-1][0] != '?' else method.split('/')[-2]
-        file_error = f'{file_error}.json'
+        file_error = f'{file_error}{self.startdate.strftime(settings.POSTFIX_DATE_FORMAT)}.json'
 
         #Reading this file to dict if file is existing
         if os.path.isfile(os.path.join(self.errors_path, file_error)):
@@ -151,7 +173,7 @@ class Api:
 
         try:
             res = requests.request(type_method, _method,
-                                   headers=headers, data=payload, files=files)
+                                   headers=headers, data=payload, files=files, verify= self.ssl_verify)
             text_result = res.content.decode('utf-8')
         except Exception as err:
             self.logger.error(f'{method}: {err}')
@@ -187,7 +209,7 @@ class Api:
         if settings.FILES_MOVE_TO_ARCHIVE == "YES":
             # Перемещаем только файлы для отравления
             filename, ext = os.path.basename(src).split('.')
-            filename = f'{filename}_{datetime.datetime.now().strftime("%Y%m%d%H%M%S")}{ext}'
+            filename = f'{filename}{datetime.datetime.now().strftime(settings.POSTFIX_DATE_FORMAT)}.{ext}'
             destination = os.path.join(self.outbox_arch_path, os.path.basename(filename))
             move(src, destination)
 
