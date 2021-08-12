@@ -1,0 +1,2 @@
+#!/bin/bash
+source venv/bin/activate && pyinstaller -n api_module_debug -F api_module.py && pyinstaller -n to_zip_media_debug -F  to_zip_media.py

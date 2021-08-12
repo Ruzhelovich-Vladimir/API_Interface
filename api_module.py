@@ -14,14 +14,15 @@ from main_module import init
 from json_module import JsonFile
 import re
 
+
 class Api:
     """API Class"""
 
-    __slots__ = (
-        'conn', 'headers', 'supplier_data', 'request_plan_data', 'login', 'password', 'supplierId', 'outbox_path',
-        'current_token', 'protocol', 'server', 'login'
-    )
-    
+    # __slots__ = (
+    #     'conn', 'headers', 'supplier_data', 'request_plan_data', 'login', 'password', 'supplierId', 'outbox_path',
+    #     'current_token', 'protocol', 'server', 'login', 'logger'
+    # )
+
     def __init__(self, api_logger):
 
         self.logger = api_logger
@@ -52,8 +53,8 @@ class Api:
 
         self.headers["Authorization"] = f"Bearer {self.current_token}"
 
-    
     """Get token request"""
+
     def __get_token(self):
         r = {'login': self.login, 'password': self.password,
              "supplierId": self.supplierId}
@@ -65,11 +66,13 @@ class Api:
         return res, result
 
     """API request"""
+
     def api_request(self, type_method, method, successful_execution, json_data={}, filename=''):
 
         method = method.replace('$supplierId$', f'{self.supplierId}')
         try:
-            self.conn.request(type_method, method, json_data, headers=self.headers)
+            self.conn.request(type_method, method, json_data,
+                              headers=self.headers)
             res = self.conn.getresponse()
             text_result = res.read().decode('utf-8')
         except Exception as err:
@@ -81,17 +84,18 @@ class Api:
 
         errors = ''
 
-
-        msg = lambda : f'{type_method} {method.replace(self.catalog, "")} {str(res.status)}: {res.reason} {errors}'
+        def msg(
+        ): return f'{type_method} {method.replace(self.catalog, "")} {str(res.status)}: {res.reason} {errors}'
 
         if not result:
             dict_result = []
             try:
-                #Попытка преоборазовать в JSON-структуру
+                # Попытка преоборазовать в JSON-структуру
                 dict_result = json.loads(text_result)
             except:
-                errors=[text_result] # Пребразую текст в подобную json структуру
-            
+                # Пребразую текст в подобную json структуру
+                errors = [text_result]
+
             errors = self.save_to_file(dict_result, method)
             text_result = ''
             self.logger.info(msg())
@@ -107,7 +111,8 @@ class Api:
         result = data
 
         if 'failed' in error:
-            error = [_error for elem in error['failed'] for _error in error['failed'][elem]]
+            error = [_error for elem in error['failed']
+                     for _error in error['failed'][elem]]
 
         # Перебор всех элементов
         for elem in error:
@@ -120,14 +125,16 @@ class Api:
             else:
                 continue
             # Заменяем в описании ошибки значение атрибутов наименование атрибута для унификации ошибок
-            
-            
-            for key in elem:
-                if elem[key] != '':
-                    pattern = rf'\b{str(elem[key])}\b|\b:{str(elem[key])}\b|\b-{str(elem[key])}\b'
-                    error_type = re.sub(pattern, f'[{key}]', error_type, count=1)
-                    #error_type = error_type.replace(f': {str(elem[key])} ', f': [{key}] ').replace(f'- {str(elem[key])} ', f'- [{key}] ').replace(f' -{str(elem[key])} ', f' -[{key}] ').replace(f' {str(elem[key])} ', f' [{key}] ')
 
+            for key in elem:
+                if elem[key] != '' and not isinstance(elem[key], list) and not isinstance(elem[key], tuple):
+                    pattern = rf'\b{str(elem[key])}\b|\b:{str(elem[key])}\b|\b-{str(elem[key])}\b|\s{str(elem[key])}\s'
+                    try:
+                        error_type = re.sub(
+                            pattern, f'[{key}]', error_type, count=1)
+                    except Exception as err:
+                        print(err)
+                    #error_type = error_type.replace(f': {str(elem[key])} ', f': [{key}] ').replace(f'- {str(elem[key])} ', f'- [{key}] ').replace(f' -{str(elem[key])} ', f' -[{key}] ').replace(f' {str(elem[key])} ', f' [{key}] ')
 
             if error_type in result:
                 # Добавляем в сушествующий тип новый элемен
@@ -142,13 +149,15 @@ class Api:
         return result
 
     """Save group error to file"""
+
     def save_to_file(self, error, method):
 
-        #Get filename
-        file_error = method.split('/')[-1] if method.split('/')[-1][0] != '?' else method.split('/')[-2]
+        # Get filename
+        file_error = method.split(
+            '/')[-1] if method.split('/')[-1][0] != '?' else method.split('/')[-2]
         file_error = f'{file_error}{self.startdate.strftime(settings.POSTFIX_DATE_FORMAT)}.json'
 
-        #Reading this file to dict if file is existing
+        # Reading this file to dict if file is existing
         if os.path.isfile(os.path.join(self.errors_path, file_error)):
             with open(os.path.join(self.errors_path, file_error), mode='r', encoding='utf8') as f:
                 old_data = json.load(f)
@@ -163,6 +172,7 @@ class Api:
         return errors_list
 
     """API Send file"""
+
     def send_file_response(self, type_method, method, successful_execution, media_path):
 
         method = method.replace('$supplierId$', f'{self.supplierId}')
@@ -173,7 +183,7 @@ class Api:
 
         try:
             res = requests.request(type_method, _method,
-                                   headers=headers, data=payload, files=files, verify= self.ssl_verify)
+                                   headers=headers, data=payload, files=files, verify=self.ssl_verify)
             text_result = res.content.decode('utf-8')
         except Exception as err:
             self.logger.error(f'{method}: {err}')
@@ -184,8 +194,10 @@ class Api:
 
         msg = f'{type_method} {method.replace(self.catalog, "")} {str(res.status_code)}: {res.reason} {media_path}'
         if not result:
-            error = json.loads(text_result) if res.status_code == 200 else text_result
-            errors = self.save_to_file(error, method) if res.status_code == 200 else [text_result]
+            error = json.loads(
+                text_result) if res.status_code == 200 else text_result
+            errors = self.save_to_file(error, method) if res.status_code == 200 else [
+                text_result]
             msg = f'{msg} - {errors}'
             text_result = ""
         self.logger.info(msg)
@@ -210,7 +222,8 @@ class Api:
             # Перемещаем только файлы для отравления
             filename, ext = os.path.basename(src).split('.')
             filename = f'{filename}{datetime.datetime.now().strftime(settings.POSTFIX_DATE_FORMAT)}.{ext}'
-            destination = os.path.join(self.outbox_arch_path, os.path.basename(filename))
+            destination = os.path.join(
+                self.outbox_arch_path, os.path.basename(filename))
             move(src, destination)
 
         return
@@ -276,11 +289,11 @@ class Api:
 
             return res, result
 
-
     def run_requests_all(self):
         """Run everything requests api from plan"""
         for request in self.request_plan_data["plan"]:
             self.run_requests(request)
+
 
 def run(logger_arg):
 
