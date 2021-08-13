@@ -7,7 +7,7 @@ import log
 from main_module import init
 
 PATH = settings.OUTBOX_DATA_FOLDER
-EXT = 'jpg'
+MEDIA_TYPES = settings.MEDIA_TYPES
 SEPARATOR = '_'
 
 def run(logger):
@@ -18,13 +18,14 @@ def run(logger):
     files = os.listdir()
 
     for file in files:
-        if file.endswith(f'.{EXT}'):
-            file_path=os.path.join(file)
-            arch_name = os.path.join(f'uploadProductsImages_{file[:-4].split(SEPARATOR)[0]}.zip')
-            with zipfile.ZipFile(arch_name, mode='a', compression=zipfile.ZIP_DEFLATED) as zf:
-                zf.write(file_path)
-            os.remove(file_path)
-            logger.info(f'Добавлен в архив файл: {file}')
+        for ext in MEDIA_TYPES:
+            if file.endswith(f'.{ext}'):
+                file_path=os.path.join(file)
+                arch_name = os.path.join(f'uploadProductsImages_{file[:-4].split(SEPARATOR)[0]}.zip')
+                with zipfile.ZipFile(arch_name, mode='a', compression=zipfile.ZIP_DEFLATED) as zf:
+                    zf.write(file_path)
+                os.remove(file_path)
+                logger.info(f'Добавлен в архив файл: {file}')
     
     os.chdir(default_path)
 

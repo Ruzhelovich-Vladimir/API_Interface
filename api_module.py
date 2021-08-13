@@ -6,6 +6,9 @@ import requests
 import json
 import os
 from shutil import move
+
+import urllib3
+
 import log
 import datetime
 
@@ -110,6 +113,9 @@ class Api:
 
         result = data
 
+        if isinstance(error, str):
+            return [error]
+
         if 'failed' in error:
             error = [_error for elem in error['failed']
                      for _error in error['failed'][elem]]
@@ -182,6 +188,8 @@ class Api:
         headers = {'Authorization': f'Bearer {self.current_token}'}
 
         try:
+            if not self.ssl_verify:
+                urllib3.disable_warnings()
             res = requests.request(type_method, _method,
                                    headers=headers, data=payload, files=files, verify=self.ssl_verify)
             text_result = res.content.decode('utf-8')
