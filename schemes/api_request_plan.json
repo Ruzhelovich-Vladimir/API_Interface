@@ -120,6 +120,18 @@
         },
         {
             "type": "POST",
+            "method": "Order/denials",
+            "json_data_path": "denials.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
+            "method": "/Order/orderHDenials",
+            "json_data_path": "orderHDenials.json",
+            "successful_execution": "[]"
+        },
+        {
+            "type": "POST",
             "method": "Promo/promoActivities",
             "json_data_path": "promoActivities.json",
             "successful_execution": "[]"

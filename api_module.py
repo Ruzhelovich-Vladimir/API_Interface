@@ -70,8 +70,32 @@ class Api:
 
     """API request"""
 
-    def api_request(self, type_method, method, successful_execution, json_data={}, filename=''):
+    def api_request(self, type_method, method, successful_execution, json_data='{}', filename=None):
 
+        if filename:
+            with open(filename, "r", encoding='utf-8') as read_file:
+                try:
+                    msg = 'load json object'
+                    json_obj = json.load(read_file)
+                    msg = 'serealizer json object'
+                    json_data = json.dumps(json_obj)
+                    msg = 'move file to done folder'
+                except Exception as err:
+                    err_msg = err.msg
+                    err_lineno = err.lineno
+                    self.logger.error(
+                        f"{msg} - Error of json format: {os.path.join(method_path, request['json_data_path'])} - "
+                        f"{err_msg} line-#{err_lineno})")
+            # Перемещаем только файлы для отравления
+            self.move_to_archive(filename)
+        else:
+            json_obj = json.loads(json_data)
+
+        if json_data is None:
+            return
+
+        error_total = 0
+        objects_total = len(json_obj['data']) if 'data' in json_obj else 0
         method = method.replace('$supplierId$', f'{self.supplierId}')
         try:
             self.conn.request(type_method, method, json_data,
@@ -80,15 +104,19 @@ class Api:
             text_result = res.read().decode('utf-8')
         except Exception as err:
             self.logger.error(f'{method}: {err}')
-            return False
+            return
 
         result = True if (successful_execution == text_result or successful_execution ==
                           "data") and res.status == 200 else False
 
         errors = ''
 
-        def msg(
-        ): return f'{type_method} {method.replace(self.catalog, "")} {str(res.status)}: {res.reason} {errors}'
+        def msg():
+            static = f'({objects_total if objects_total>0 else "0"}' + \
+                f',{objects_total-error_total if (objects_total-error_total)>0 else "0"}' + \
+                f',{error_total if error_total>0 else "0"})'
+
+            return f'{static}{" "*(20-len(static))} - {type_method} {method.replace(self.catalog, "")} {str(res.status)}: {res.reason} {errors}  '
 
         if not result:
             dict_result = []
@@ -100,6 +128,7 @@ class Api:
                 errors = [text_result]
 
             errors = self.save_to_file(dict_result, method)
+            error_total = len(dict_result)
             text_result = ''
             self.logger.info(msg())
         else:
@@ -200,7 +229,7 @@ class Api:
         result = True if '{"failed":{}}' == text_result or successful_execution == "date" \
                          and res.status_code == 200 else False
 
-        msg = f'{type_method} {method.replace(self.catalog, "")} {str(res.status_code)}: {res.reason} {media_path}'
+        msg = f'файл               - {type_method} {method.replace(self.catalog, "")} {str(res.status_code)}: {res.reason} {media_path}'
         if not result:
             error = json.loads(
                 text_result) if res.status_code == 200 else text_result
@@ -248,7 +277,7 @@ class Api:
                 filename=request["media_path"], path=method_path, ext='zip')
             if len(zip_list) == 0:
                 self.logger.warning(
-                    f'{request["type"]} {request["method"]} - skip')
+                    f'файл                 - {request["type"]} {request["method"]} - skip')
             for _file_name in zip_list:
                 self.send_file_response(request["type"], f'{self.catalog}{request["method"]}',
                                         request["successful_execution"], _file_name)
@@ -259,29 +288,12 @@ class Api:
                 filename=request["json_data_path"], path=method_path, ext='json')
             if len(json_list) == 0:
                 self.logger.warning(
-                    f'{request["type"]} {request["method"]} - skip')
+                    f'(0,0,0)              - {request["type"]} {request["method"]} - skip')
 
             for _file_name in json_list:
-                with open(_file_name, "r", encoding='utf-8') as read_file:
-                    try:
-                        msg = 'load json object'
-                        json_obj = json.load(read_file)
-                        msg = 'serealizer json object'
-                        data = json.dumps(json_obj)
-                        msg = 'move file to done folder'
-                    except Exception as err:
-                        err_msg = err.msg
-                        err_lineno = err.lineno
-                        self.logger.error(
-                            f"{msg} - Error of json format: {os.path.join(method_path, request['json_data_path'])} - "
-                            f"{err_msg} line-#{err_lineno})")
-                        continue
-
-                # Перемещаем только файлы для отравления
-                self.move_to_archive(_file_name)
                 self.api_request(
-                    request["type"], f'{self.catalog}{request["method"]}', request["successful_execution"], data,
-                    _file_name)
+                    type_method=request["type"], method=f'{self.catalog}{request["method"]}',
+                    successful_execution=request["successful_execution"], filename=_file_name)
         elif request["type"] == "GET" and "json_data_path" in request:
             res, result = False, []
             with open(os.path.join(os.getcwd(), method_path, request["json_data_path"]), "w", encoding='utf-8') as file:
