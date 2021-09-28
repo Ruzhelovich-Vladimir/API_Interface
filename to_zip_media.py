@@ -29,8 +29,8 @@ def run(logger):
     
     os.chdir(default_path)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     logger = log.init()
-    logger.info(f'НАЧАЛО:АРХИВАЦИЯ КАРТИНОК API')
+    logger.info(f'                       НАЧАЛО:АРХИВАЦИЯ КАРТИНОК API')
     run(logger)
-    logger.info(f'КОНЕЦ:АРХИВАЦИЯ КАРТИНОК API')
+    logger.info(f'                       КОНЕЦ:АРХИВАЦИЯ КАРТИНОК API')

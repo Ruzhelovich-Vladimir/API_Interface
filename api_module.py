@@ -277,7 +277,7 @@ class Api:
                 filename=request["media_path"], path=method_path, ext='zip')
             if len(zip_list) == 0:
                 self.logger.warning(
-                    f'файл                 - {request["type"]} {request["method"]} - skip')
+                    f'файл                 - {request["type"]} {request["method"]} - не найден файл')
             for _file_name in zip_list:
                 self.send_file_response(request["type"], f'{self.catalog}{request["method"]}',
                                         request["successful_execution"], _file_name)
@@ -288,7 +288,7 @@ class Api:
                 filename=request["json_data_path"], path=method_path, ext='json')
             if len(json_list) == 0:
                 self.logger.warning(
-                    f'(0,0,0)              - {request["type"]} {request["method"]} - skip')
+                    f'(0,0,0)              - {request["type"]} {request["method"]} - не найден файл')
 
             for _file_name in json_list:
                 self.api_request(
@@ -326,6 +326,6 @@ if __name__ == "__main__":
     # Init logger
     logger = log.init()
 
-    logger.info(f'НАЧАЛО:ТРАНСПОРТ API')
+    logger.info(f'(общ,загр,ошибок)      НАЧАЛО:ТРАНСПОРТ API')
     run(logger)
-    logger.info(f'КОНЕЦ:ТРАНСПОРТ API')
+    logger.info(f'(общ,загр,ошибок)      КОНЕЦ:ТРАНСПОРТ API')

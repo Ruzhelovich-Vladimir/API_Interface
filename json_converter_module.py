@@ -153,7 +153,7 @@ def run(argv, logger_arg):
     ConvertFilesToJson(file_list)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     init()
     logger = log.init()
     logger.info(f'НАЧАЛО:КОНВЕРТАЦИЯ ДАННЫХ API')
