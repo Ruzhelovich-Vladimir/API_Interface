@@ -98,8 +98,12 @@ class Api:
         objects_total = len(json_obj['data']) if 'data' in json_obj else 0
         method = method.replace('$supplierId$', f'{self.supplierId}')
         try:
-            self.conn.request(type_method, method, json_data,
+            if json_data != '{}':
+                self.conn.request(type_method, method, json_data,
                               headers=self.headers)
+            else:
+                self.conn.request(type_method, method, headers=self.headers)
+
             res = self.conn.getresponse()
             text_result = res.read().decode('utf-8')
         except Exception as err:
@@ -116,7 +120,7 @@ class Api:
                 f',{objects_total-error_total if (objects_total-error_total)>0 else "0"}' + \
                 f',{error_total if error_total>0 else "0"})'
 
-            return f'{static}{" "*(20-len(static))} - {type_method} {method.replace(self.catalog, "")} {str(res.status)}: {res.reason} {errors}  '
+            return f'{static}{" "*(20-len(static))} - {type_method} {method.replace(self.catalog, "/")} {str(res.status)}: {res.reason} {errors}  '
 
         if not result:
             dict_result = []
@@ -132,6 +136,8 @@ class Api:
             text_result = ''
             self.logger.info(msg())
         else:
+            objects_total = len(json.loads(text_result))
+            error_total = 0
             self.logger.info(msg())
 
         return result, text_result
